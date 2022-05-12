@@ -2,7 +2,7 @@ use edu_asm_parser::instruction::ControlFlow;
 
 use crate::{behaviour::Readable, register::{RegisterBehaviour, RegisterSpecifier}};
 
-use super::{Executable, RegOrLit};
+use super::Executable;
 
 pub(crate) struct Jmp {
     loc: usize,

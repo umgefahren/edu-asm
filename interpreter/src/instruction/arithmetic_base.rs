@@ -1,4 +1,4 @@
-use edu_asm_parser::instruction::{ArithmeticBase, RegisterOrLiteral};
+use edu_asm_parser::instruction::ArithmeticBase;
 
 use crate::{behaviour::{Writeable, Readable}, register::RegisterSpecifier};
 

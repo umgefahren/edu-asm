@@ -121,10 +121,6 @@ impl Default for InstructionRegister {
 }
 
 impl InstructionRegister {
-    pub(crate) fn get(&self) -> usize {
-        self.counter
-    }
-
     pub(crate) fn inc(&mut self) -> usize {
         let ret = self.counter;
         self.counter += 1;
