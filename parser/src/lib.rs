@@ -2,8 +2,8 @@ use std::{collections::HashMap, rc::Rc, str::FromStr};
 
 use comment::strip_coment;
 use instruction::{
-    ArithmeticBase, ArithmeticMultDivEasy, ControlFlow, Instruction, InstructionParseError, Memory,
-    Misc,
+    ArithmeticBase, ArithmeticBitLogic, ArithmeticMultDivEasy, ArithmeticShift, ControlFlow,
+    Instruction, InstructionParseError, Memory, Misc,
 };
 use label::{LabelToken, LocAwLabel};
 use thiserror::Error;
@@ -78,6 +78,23 @@ fn parse_instruction(
     let arithmetic_mult_div_error = arithmetic_mult_div_result.unwrap_err();
     if !arithmetic_mult_div_error.is_unknown_instruction() {
         return Err(arithmetic_mult_div_error);
+    }
+    let arithmetic_shift_result = ArithmeticShift::from_str(inp).map(Instruction::ArithmeticShift);
+    if arithmetic_shift_result.is_ok() {
+        return arithmetic_shift_result;
+    }
+    let arithmetic_shift_error = arithmetic_shift_result.unwrap_err();
+    if !arithmetic_shift_error.is_unknown_instruction() {
+        return Err(arithmetic_shift_error);
+    }
+    let arithmetic_bitlogic_result =
+        ArithmeticBitLogic::from_str(inp).map(Instruction::ArithmeticBitLogic);
+    if arithmetic_bitlogic_result.is_ok() {
+        return arithmetic_bitlogic_result;
+    }
+    let arithmetic_bitlogic_error = arithmetic_bitlogic_result.unwrap_err();
+    if !arithmetic_bitlogic_error.is_unknown_instruction() {
+        return Err(arithmetic_bitlogic_error);
     }
     let control_flow_result = ControlFlow::from_str(inp);
     if let Ok(mut control_flow_instruction) = control_flow_result {

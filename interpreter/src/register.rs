@@ -265,6 +265,7 @@ impl From<RegisterToken> for RegisterSpecifier {
             RegisterToken::Return => Self::R,
             RegisterToken::Instruction => Self::I,
             RegisterToken::Zero => Self::Z,
+            _ => unimplemented!("register specifier is unimplemented"),
         }
     }
 }

@@ -1,4 +1,6 @@
-use std::{rc::Rc, str::FromStr};
+use std::str::FromStr;
+use std::rc::Rc;
+
 use thiserror::Error;
 
 use crate::{
@@ -12,6 +14,8 @@ use crate::{
 pub enum Instruction {
     ArithmeticBase(ArithmeticBase),
     ArithmeticMultDivEasy(ArithmeticMultDivEasy),
+    ArithmeticShift(ArithmeticShift),
+    ArithmeticBitLogic(ArithmeticBitLogic),
     ControlFlow(ControlFlow),
     Memory(Memory),
     Misc(Misc),
@@ -55,6 +59,18 @@ impl FromStr for RegisterOrLiteral {
                 Err(l) => Err(InstructionParseError::RegisterLiteralParseError(e, l)),
             },
         }
+    }
+}
+
+impl From<RegisterToken> for RegisterOrLiteral {
+    fn from(r: RegisterToken) -> Self {
+        RegisterOrLiteral::Register(r)
+    }
+}
+
+impl From<LiteralToken> for RegisterOrLiteral {
+    fn from(l: LiteralToken) -> Self {
+        RegisterOrLiteral::Literal(l)
     }
 }
 
@@ -153,6 +169,174 @@ impl FromStr for ArithmeticBase {
                 let s = RegisterToken::from_str(s_str)?;
                 let t = RegisterOrLiteral::from_str(t_str)?;
                 Ok(ArithmeticBase::SubIu { s, t })
+            }
+            _ => Err(InstructionParseError::UnknownInstruction(s.to_string())),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub enum ArithmeticShift {
+    LshLT {
+        d: RegisterToken,
+        s: RegisterOrLiteral,
+        t: RegisterOrLiteral,
+    },
+    LshLI {
+        s: RegisterToken,
+        t: RegisterOrLiteral,
+    },
+    LshRT {
+        d: RegisterToken,
+        s: RegisterOrLiteral,
+        t: RegisterOrLiteral,
+    },
+    LshRI {
+        s: RegisterToken,
+        t: RegisterOrLiteral,
+    },
+    AshRT {
+        d: RegisterToken,
+        s: RegisterOrLiteral,
+        t: RegisterOrLiteral,
+    },
+    AshRI {
+        s: RegisterToken,
+        t: RegisterOrLiteral,
+    },
+}
+
+impl FromStr for ArithmeticShift {
+    type Err = InstructionParseError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let parts = split_collect(s);
+
+        match parts[..] {
+            ["lshlt", d_str, s_str, t_str] => {
+                let d = RegisterToken::from_str(d_str)?;
+                let s = RegisterOrLiteral::from_str(s_str)?;
+                let t = RegisterOrLiteral::from_str(t_str)?;
+                Ok(ArithmeticShift::LshLT { d, s, t })
+            }
+            ["lshli", s_str, t_str] => {
+                let s = RegisterToken::from_str(s_str)?;
+                let t = RegisterOrLiteral::from_str(t_str)?;
+                Ok(ArithmeticShift::LshLI { s, t })
+            }
+            ["lshrt", d_str, s_str, t_str] => {
+                let d = RegisterToken::from_str(d_str)?;
+                let s = RegisterOrLiteral::from_str(s_str)?;
+                let t = RegisterOrLiteral::from_str(t_str)?;
+                Ok(ArithmeticShift::LshRT { d, s, t })
+            }
+            ["lshri", s_str, t_str] => {
+                let s = RegisterToken::from_str(s_str)?;
+                let t = RegisterOrLiteral::from_str(t_str)?;
+                Ok(ArithmeticShift::LshRI { s, t })
+            }
+            ["ashrt", d_str, s_str, t_str] => {
+                let d = RegisterToken::from_str(d_str)?;
+                let s = RegisterOrLiteral::from_str(s_str)?;
+                let t = RegisterOrLiteral::from_str(t_str)?;
+                Ok(ArithmeticShift::AshRT { d, s, t })
+            }
+            ["ashri", s_str, t_str] => {
+                let s = RegisterToken::from_str(s_str)?;
+                let t = RegisterOrLiteral::from_str(t_str)?;
+                Ok(ArithmeticShift::AshRI { s, t })
+            }
+            _ => Err(InstructionParseError::UnknownInstruction(s.to_string())),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub enum ArithmeticBitLogic {
+    AndT {
+        d: RegisterToken,
+        s: RegisterOrLiteral,
+        t: RegisterOrLiteral,
+    },
+    AndI {
+        s: RegisterToken,
+        t: RegisterOrLiteral,
+    },
+    OrT {
+        d: RegisterToken,
+        s: RegisterOrLiteral,
+        t: RegisterOrLiteral,
+    },
+    OrI {
+        s: RegisterToken,
+        t: RegisterOrLiteral,
+    },
+    XorT {
+        d: RegisterToken,
+        s: RegisterOrLiteral,
+        t: RegisterOrLiteral,
+    },
+    XorI {
+        s: RegisterToken,
+        t: RegisterOrLiteral,
+    },
+    NotT {
+        d: RegisterToken,
+        s: RegisterOrLiteral,
+    },
+    NoI {
+        s: RegisterToken,
+    },
+}
+
+impl FromStr for ArithmeticBitLogic {
+    type Err = InstructionParseError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let parts = split_collect(s);
+
+        match parts[..] {
+            ["andt", d_str, s_str, t_str] => {
+                let d = RegisterToken::from_str(d_str)?;
+                let s = RegisterOrLiteral::from_str(s_str)?;
+                let t = RegisterOrLiteral::from_str(t_str)?;
+                Ok(ArithmeticBitLogic::AndT { d, s, t })
+            }
+            ["andi", s_str, t_str] => {
+                let s = RegisterToken::from_str(s_str)?;
+                let t = RegisterOrLiteral::from_str(t_str)?;
+                Ok(ArithmeticBitLogic::AndI { s, t })
+            }
+            ["ort", d_str, s_str, t_str] => {
+                let d = RegisterToken::from_str(d_str)?;
+                let s = RegisterOrLiteral::from_str(s_str)?;
+                let t = RegisterOrLiteral::from_str(t_str)?;
+                Ok(ArithmeticBitLogic::OrT { d, s, t })
+            }
+            ["ori", s_str, t_str] => {
+                let s = RegisterToken::from_str(s_str)?;
+                let t = RegisterOrLiteral::from_str(t_str)?;
+                Ok(ArithmeticBitLogic::OrI { s, t })
+            }
+            ["xort", d_str, s_str, t_str] => {
+                let d = RegisterToken::from_str(d_str)?;
+                let s = RegisterOrLiteral::from_str(s_str)?;
+                let t = RegisterOrLiteral::from_str(t_str)?;
+                Ok(ArithmeticBitLogic::XorT { d, s, t })
+            }
+            ["xori", s_str, t_str] => {
+                let s = RegisterToken::from_str(s_str)?;
+                let t = RegisterOrLiteral::from_str(t_str)?;
+                Ok(ArithmeticBitLogic::XorI { s, t })
+            }
+            ["nott", d_str, s_str] => {
+                let d = RegisterToken::from_str(d_str)?;
+                let s = RegisterOrLiteral::from_str(s_str)?;
+                Ok(ArithmeticBitLogic::NotT { d, s })
+            }
+            ["noi", s_str] => {
+                let s = RegisterToken::from_str(s_str)?;
+                Ok(ArithmeticBitLogic::NoI { s })
             }
             _ => Err(InstructionParseError::UnknownInstruction(s.to_string())),
         }
@@ -454,8 +638,44 @@ pub enum Memory {
     Mov {
         /// this is the target register
         t: RegisterToken,
-        /// this is the source register
-        s: RegisterToken,
+        /// this is the source register or literal
+        s: RegisterOrLiteral,
+    },
+    Load {
+        t: RegisterToken,
+        s: RegisterOrLiteral,
+    },
+    LoadO {
+        t: RegisterToken,
+        s: RegisterOrLiteral,
+        o: RegisterOrLiteral,
+    },
+    Loadb {
+        t: RegisterToken,
+        s: RegisterOrLiteral,
+    },
+    LoadbO {
+        t: RegisterToken,
+        s: RegisterOrLiteral,
+        o: RegisterOrLiteral,
+    },
+    Stor {
+        s: RegisterOrLiteral,
+        t: RegisterOrLiteral,
+    },
+    StorO {
+        s: RegisterOrLiteral,
+        t: RegisterOrLiteral,
+        o: RegisterOrLiteral,
+    },
+    Storb {
+        s: RegisterOrLiteral,
+        t: RegisterOrLiteral,
+    },
+    StorbO {
+        s: RegisterOrLiteral,
+        t: RegisterOrLiteral,
+        o: RegisterOrLiteral,
     },
     Push {
         d: RegisterToken,
@@ -473,8 +693,52 @@ impl FromStr for Memory {
         match parts[..] {
             ["mov", t_str, s_str] => {
                 let t = RegisterToken::from_str(t_str)?;
-                let s = RegisterToken::from_str(s_str)?;
+                let s = RegisterOrLiteral::from_str(s_str)?;
                 Ok(Memory::Mov { t, s })
+            }
+            ["load", t_str, s_str] => {
+                let t = RegisterToken::from_str(t_str)?;
+                let s = RegisterOrLiteral::from_str(s_str)?;
+                Ok(Memory::Load { t, s })
+            }
+            ["loado", t_str, s_str, o_str] => {
+                let t = RegisterToken::from_str(t_str)?;
+                let s = RegisterOrLiteral::from_str(s_str)?;
+                let o = RegisterOrLiteral::from_str(o_str)?;
+                Ok(Memory::LoadO { t, s, o })
+            }
+            ["loadb", t_str, s_str] => {
+                let t = RegisterToken::from_str(t_str)?;
+                let s = RegisterOrLiteral::from_str(s_str)?;
+                Ok(Memory::Loadb { t, s })
+            }
+            ["loadbo", t_str, s_str, o_str] => {
+                let t = RegisterToken::from_str(t_str)?;
+                let s = RegisterOrLiteral::from_str(s_str)?;
+                let o = RegisterOrLiteral::from_str(o_str)?;
+                Ok(Memory::LoadbO { t, s, o })
+            }
+            ["stor", s_str, t_str] => {
+                let s = RegisterOrLiteral::from_str(s_str)?;
+                let t = RegisterOrLiteral::from_str(t_str)?;
+                Ok(Memory::Stor { s, t })
+            }
+            ["storo", s_str, t_str, o_str] => {
+                let s = RegisterOrLiteral::from_str(s_str)?;
+                let t = RegisterOrLiteral::from_str(t_str)?;
+                let o = RegisterOrLiteral::from_str(o_str)?;
+                Ok(Memory::StorO { s, t, o })
+            }
+            ["storb", s_str, t_str] => {
+                let s = RegisterOrLiteral::from_str(s_str)?;
+                let t = RegisterOrLiteral::from_str(t_str)?;
+                Ok(Memory::Storb { s, t })
+            }
+            ["storbo", s_str, t_str, o_str] => {
+                let s = RegisterOrLiteral::from_str(s_str)?;
+                let t = RegisterOrLiteral::from_str(t_str)?;
+                let o = RegisterOrLiteral::from_str(o_str)?;
+                Ok(Memory::StorbO { s, t, o })
             }
             ["push", d_str] => {
                 let d = RegisterToken::from_str(d_str)?;
@@ -492,9 +756,10 @@ impl FromStr for Memory {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Misc {
     Halt,
-    Exit { s: RegisterToken },
-    Print { s: RegisterToken },
+    Exit { s: RegisterOrLiteral },
+    Print { s: RegisterOrLiteral },
     Read { s: RegisterToken },
+    Dump,
     Nop,
 }
 
@@ -508,17 +773,18 @@ impl FromStr for Misc {
         match parts[..] {
             ["halt"] => Ok(Misc::Halt),
             ["exit", s_str] => {
-                let s = RegisterToken::from_str(s_str)?;
+                let s = RegisterOrLiteral::from_str(s_str)?;
                 Ok(Misc::Exit { s })
             }
             ["print", s_str] => {
-                let s = RegisterToken::from_str(s_str)?;
+                let s = RegisterOrLiteral::from_str(s_str)?;
                 Ok(Misc::Print { s })
             }
             ["read", s_str] => {
                 let s = RegisterToken::from_str(s_str)?;
                 Ok(Misc::Read { s })
             }
+            ["dump"] => Ok(Misc::Dump),
             ["nop"] => Ok(Misc::Nop),
             _ => Err(InstructionParseError::UnknownInstruction(s.to_string())),
         }

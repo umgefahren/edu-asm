@@ -1,5 +1,6 @@
 [workspace]
-members = ["parser", "interpreter"]
+members = ["parser", "interpreter", "assembler"]
+default-members = ["parser", "assembler"]
 
 [profile.release]
 lto = true

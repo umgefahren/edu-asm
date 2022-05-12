@@ -12,6 +12,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "edu-asm-assembler"
+version = "0.1.0"
+dependencies = [
+ "edu-asm-parser",
+ "tinyvec",
+]
+
+[[package]]
 name = "edu-asm-interpreter"
 version = "0.1.0"
 dependencies = [
@@ -104,6 +112,12 @@ dependencies = [
  "quote",
  "syn",
 ]
+
+[[package]]
+name = "tinyvec"
+version = "1.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "87cc5ceb3875bb20c2890005a4e226a4651264a5c75edb2421b52861a0a0cb50"
 
 [[package]]
 name = "unicode-xid"

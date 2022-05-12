@@ -9,6 +9,7 @@ pub enum RegisterToken {
     Return,
     Instruction,
     Zero,
+    Error,
 }
 
 #[derive(Error, Debug)]
@@ -34,6 +35,7 @@ impl FromStr for RegisterToken {
             "$R" => RegisterToken::Return,
             "$I" => RegisterToken::Instruction,
             "$Z" => RegisterToken::Zero,
+            "$E" => RegisterToken::Error,
             _ => {
                 return Err(RegisterParseError::InvalidFormatted(s.to_string()));
             }

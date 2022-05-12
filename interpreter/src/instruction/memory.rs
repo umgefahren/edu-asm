@@ -5,7 +5,7 @@ use crate::{
     register::RegisterSpecifier,
 };
 
-use super::Executable;
+use super::{Executable, RegOrLit};
 
 pub(crate) struct Mov<T: Writeable, S: Readable> {
     t: T,
@@ -44,7 +44,7 @@ pub(super) fn transpile_memory(instr: Memory) -> Box<dyn Executable> {
     match instr {
         Memory::Mov { t, s } => {
             let t = RegisterSpecifier::from(t);
-            let s = RegisterSpecifier::from(s);
+            let s = RegOrLit::from(s);
             Box::new(Mov { t, s })
         }
         Memory::Push { d } => {
@@ -55,5 +55,6 @@ pub(super) fn transpile_memory(instr: Memory) -> Box<dyn Executable> {
             let d = RegisterSpecifier::from(d);
             Box::new(Pop { d })
         }
+        _ => unimplemented!("{:?} is not implemented", instr),
     }
 }
