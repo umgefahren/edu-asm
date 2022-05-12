@@ -29,6 +29,7 @@ These registers define the bounds of the stack. They both store a 64-bit pointer
  * $R - Return register, the return value of a call is stored here
  * $I - Instruction pointer, this pointer is moved over the program section, storing the address of the instruction currently beeing executed
  * $Z - Zero register, always contains the value zero, can not be overwritten
+ * $E - Error register
 
 ## Instructions
 

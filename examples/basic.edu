@@ -1,6 +1,6 @@
 hello:
 	  nop
-	  nop ; This is a comment
+	  nop # This is a comment
 	  mov $G_0 1
 	  mov $G_1 $G_0
 	  exit 0

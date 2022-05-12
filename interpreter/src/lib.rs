@@ -38,7 +38,7 @@ impl State {
 }
 
 #[inline]
-fn reduce_label_map(map: HashMap<String, Rc<LocAwLabel>>) -> HashMap<String, Rc<LocAwLabel>> {
+pub fn reduce_label_map(map: HashMap<String, Rc<LocAwLabel>>) -> HashMap<String, Rc<LocAwLabel>> {
     let mut ret = HashMap::with_capacity(map.capacity());
 
     let mut labels: Vec<LocAwLabel> = map.into_values().map(|e| (*e).clone()).collect();
@@ -65,7 +65,7 @@ fn reduce_label_map(map: HashMap<String, Rc<LocAwLabel>>) -> HashMap<String, Rc<
 }
 
 #[inline]
-fn update_pure_elements(
+pub fn update_pure_elements(
     map: HashMap<String, Rc<LocAwLabel>>,
     elements: Vec<PureElement>,
 ) -> Vec<PureElement> {

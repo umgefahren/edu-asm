@@ -55,5 +55,6 @@ pub(crate) fn transpile_instr(instr: Instruction) -> Box<dyn Executable> {
         Instruction::ControlFlow(i) => control_flow::transpile_control_flow(i),
         Instruction::Memory(i) => memory::transpile_memory(i),
         Instruction::Misc(i) => misc::transpile_misc(i),
+        _ => unimplemented!("instruction {:?} is unimplemented", instr),
     }
 }

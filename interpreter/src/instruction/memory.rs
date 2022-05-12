@@ -55,5 +55,6 @@ pub(super) fn transpile_memory(instr: Memory) -> Box<dyn Executable> {
             let d = RegisterSpecifier::from(d);
             Box::new(Pop { d })
         }
+        _ => unimplemented!("{:?} is not implemented", instr),
     }
 }

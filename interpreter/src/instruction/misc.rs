@@ -80,5 +80,6 @@ pub(super) fn transpile_misc(instr: Misc) -> Box<dyn Executable> {
             Box::new(Read { s })
         }
         Misc::Nop => Box::new(Nop {}),
+        _ => unimplemented!("{:?} is unimplemented", instr),
     }
 }
