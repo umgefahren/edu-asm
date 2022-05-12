@@ -12,5 +12,5 @@ pub fn strip_coment(inp: &str) -> &str {
         return &inp[..comment_match.get(0).unwrap().start()];
     }
 
-    &inp[..]
+    inp
 }
