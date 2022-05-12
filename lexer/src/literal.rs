@@ -8,7 +8,6 @@ lazy_static! {
     static ref LITERAL_RE: Regex = Regex::new(LITERAL_EXP).unwrap();
 }
 
-
 #[derive(Clone, Hash, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub struct LiteralToken {
     pub content: String,

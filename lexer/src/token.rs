@@ -1,6 +1,6 @@
 use crate::{
     comment::CommentToken, label::LabelToken, label_ref::LabelRefToken, literal::LiteralToken,
-    operator::OperatorToken, register::RegisterToken, Parsable, Span, SelfParsed,
+    operator::OperatorToken, register::RegisterToken, Parsable, SelfParsed, Span,
 };
 
 #[non_exhaustive]
@@ -14,7 +14,6 @@ pub enum PureToken {
     Comment(CommentToken),
 }
 
-
 #[derive(Clone, Hash, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub struct PositionedToken {
     pub count: usize,
@@ -27,7 +26,7 @@ impl PositionedToken {
         Self {
             token: inp.inner.into(),
             count: 0,
-            span: inp.span
+            span: inp.span,
         }
     }
 }

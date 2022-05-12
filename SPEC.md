@@ -35,28 +35,28 @@ These registers define the bounds of the stack. They both store a 64-bit pointer
 ### TOC
 
 #### Arithmetic - Base
- * addts $d $s $t
- * addis $s $t
- * addtu $d $s $t
- * addiu $d $s $t
+ * addts $d $s $t => $d = $s + $t (assuming **signed** integers)
+ * addis $s $t    => $s = $s + $t (assuming **signed** integers)
+ * addtu $d $s $t => $d = $s + $t (assuming **unsigned** integers) 
+ * addiu $s $t    => $s = $s + $t (assuming **unsigned** integers)
 
- * subts $d $s $t
- * subis $s $t
- * subtu $d $s $t
- * subiu $d $s $t
+ * subts $d $s $t => $d = $s - $t (assuming **signed** integers)
+ * subis $s $t    => $s = $s - $t (assuming **signed** integers)
+ * subtu $d $s $t => §d = $s - $t (assuming **unsigned** integers)
+ * subiu $s $t    => $s = $s - $t (assuming **unsigned** integers)
 
 
 #### Arithmetic - Mult/Div - Easy
 
 ##### Multiplication
- * mults_e $d $s $t
- * mulis_e $s $t
- * multu_e $d $s $t
- * muliu_e $s $t
+ * mults_e $d $s $t => $d = $s * $t (assuming **signed** integers) 
+ * mulis_e $s $t    => $s = $s * $t (assuming **signed** integers)
+ * multu_e $d $s $t => $d = $s * $t (assuming **unsigned** integers)
+ * muliu_e $s $t    => $s = $s * $t (assuming **unsigned** integers)
 
 ##### Division
- * divis_e $d $r $s $t
- * diviu_e $d $r $s $t
+ * divts_e $d $r $s $t => $d = $s / $t and $r = $s % $t (assuming **signed** integers)
+ * divtu_e $d $r $s $t => $d = $s / $t and $r = $s % $t (assuming **unsigned** integers)
 
 #### Control Flow
 
@@ -64,30 +64,37 @@ These registers define the bounds of the stack. They both store a 64-bit pointer
  * jmp :label
 
 ##### Conditional Jump
- * jmpeq $s $t :label
- * jmpne $s $t :label
- * jmpgt $s $t :label
- * jmpge $s $t :label
- * jmplt $s $t :label
- * jmpge $s $t :label
+ * jmpeq  $l $r :label => $l == $r
+ * jmpne  $l $r :label => $l != $r
+
+ * jmpgts $l $r :label => $l >  $r
+ * jmpges $l $r :label => $l >= $r
+ * jmplts $l $r :label => $l <  $r
+ * jmples $l $r :label => $l <= $r
+
+ * jmpgtu $l $r :label => $l >  $r
+ * jmpgeu $l $r :label => $l >= $r
+ * jmpltu $l $r :label => $l <  $r
+ * jmpleu $l $r :label => $l <= $r
 
 ##### Function
- * cal :label
- * ret $s
+ * cal :label => call the function at :label
+ * ret $s => return
 
 #### Memory
- * mov $d $s
+ * mov $t $s => Moves the contents of register $s to $t
 
 ##### Stack
- * push $d
- * pop  $d
+ * push $d => push value in register $d onto stack
+ * pop  $d => pop value from stack and put it into register $d
 
 #### Misc
- * halt  $s
- * exit  $s
- * print $s
- * read  $s
- * nop
+ * halt     => halt execution
+ * exit  $s => exit execution, returning content of register $s 
+ * print $s => print as ascii the contents of $s
+ * read  $s => read  as ascii into $s
+ * dump     => dumps the whole application state into the stdout
+ * nop      => do nothing
 
 #### Comment
 

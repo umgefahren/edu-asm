@@ -4,42 +4,6 @@ use crate::{token::PureToken, Parsable, SelfParsed, Span};
 use lazy_static::lazy_static;
 use regex::Regex;
 
-const OPERATIONS: [&str; 31] =  {
-    [
-        "addts",
-        "addis",
-        "addtu",
-        "addiu",
-        "subts",
-        "subis",
-        "subtu",
-        "subiu",
-        "mults_e",
-        "mulis_e",
-        "multu_e",
-        "muliu_e",
-        "divis_e",
-        "diviu_e",
-        "jmp",
-        "jmpeq",
-        "jmpne",
-        "jmpgt",
-        "jmpge",
-        "jmplt",
-        "jmpge",
-        "cal",
-        "ret",
-        "mov",
-        "push",
-        "pop",
-        "halt",
-        "exit",
-        "print",
-        "read",
-        "nop"
-    ]
-};
-
 const OPERATOR_EXP: &str = "([A-Za-z]+(_e)?(:)?)";
 
 lazy_static! {
@@ -62,9 +26,7 @@ impl Parsable for OperatorToken {
     fn parse(inp: &str) -> Vec<crate::SelfParsed<Self>> {
         OPERATOR_RE
             .captures_iter(inp)
-            .filter(|e| {
-                e.get(0).unwrap().as_str().ends_with(':').not()
-            })
+            .filter(|e| e.get(0).unwrap().as_str().ends_with(':').not())
             .map(|e| {
                 let mut group_iter = e.iter();
                 let whole_match = group_iter.next().unwrap().unwrap();
