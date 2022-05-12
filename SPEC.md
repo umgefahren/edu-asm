@@ -45,6 +45,24 @@ These registers define the bounds of the stack. They both store a 64-bit pointer
  * subtu $d $s $t => §d = $s - $t (assuming **unsigned** integers)
  * subiu $s $t    => $s = $s - $t (assuming **unsigned** integers)
 
+#### Arithmetic - Shift
+ * lshlt $d $s $t => $d = $s <<< $t (logical left shift)
+ * lshli $s $t    => $s = $s <<< $t (logical left shift)
+ * lshrt $d $s $t => $t = $s >>> $t (logical right shift)
+ * lshri $s $t    => $s = $s >>> $t (logical right shift)
+ * ashrt $d $s $t => $d = $s >>  $t (arithmetic right shift)
+ * ashri $s $t    => $s = $s >>  $t (arithmetic right shift)
+
+#### Arithmetic - Bitwise Logic
+ * andt $d $s $t  => $d = $s & $t
+ * andi $s $t     => $s = $s & $t
+ * ort  $d $s $t  => $d = $s | $t
+ * ori  $s $t     => $s = $s | $t
+ * xort $d $s $t  => $d = $s ^ $t
+ * xori $s $t     => $s = $s ^ $t
+ * nott $d $s     => $d = ! $s
+ * noti $s        => $s = ! $s
+
 
 #### Arithmetic - Mult/Div - Easy
 
@@ -82,7 +100,11 @@ These registers define the bounds of the stack. They both store a 64-bit pointer
  * ret $s => return
 
 #### Memory
- * mov $t $s => Moves the contents of register $s to $t
+ * mov   $t $s    => Moves the contents of register $s to $t
+ * load  $t $s    => Moves the contents of the memory location $s **points to** into register $t                  (word)
+ * loado $t $s $o => Moves the contents of the memory location $s **points to** into register $t, offseted by $o  (word)
+ * stor  $s $t    => Moves the contents of register $s into the memory location $t **points to**                  (word)
+ * storo $s $t $o => Moves the contents of register $s into the memory location $t **points to**, offseted by $o  (word)
 
 ##### Stack
  * push $d => push value in register $d onto stack
@@ -99,7 +121,3 @@ These registers define the bounds of the stack. They both store a 64-bit pointer
 #### Comment
 
 `# `
-
-#### Literal
-
-A literal has to be prefixed with: `=`
