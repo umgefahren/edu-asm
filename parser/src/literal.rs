@@ -46,31 +46,34 @@ impl FromStr for LiteralToken {
                 "s" => parse_signed_literal(s, negative, number_str),
                 "u" => {
                     if negative {
-                        return Err(LiteralParseError::ConflictingSignAndLiteralType(s.to_string(), 'u'));
+                        return Err(LiteralParseError::ConflictingSignAndLiteralType(
+                            s.to_string(),
+                            'u',
+                        ));
                     }
                     let number = match u64::from_str(number_str) {
                         Ok(d) => d,
                         Err(e) => match e.kind() {
                             IntErrorKind::PosOverflow => {
-                                return Err(
-                                    LiteralParseError::UnsignedLiteralToBig(s.to_string(), u64::MAX)
-                                )
-                            },
+                                return Err(LiteralParseError::UnsignedLiteralToBig(
+                                    s.to_string(),
+                                    u64::MAX,
+                                ))
+                            }
                             IntErrorKind::NegOverflow => {
-                                return Err(
-                                    LiteralParseError::UnsignedLiteralToBig(s.to_string(), u64::MIN)
-                                )
-                            },
-                            _ => panic!("this shouldn't have happened")
-                        }
+                                return Err(LiteralParseError::UnsignedLiteralToBig(
+                                    s.to_string(),
+                                    u64::MIN,
+                                ))
+                            }
+                            _ => panic!("this shouldn't have happened"),
+                        },
                     };
                     Ok(LiteralToken::Unsigned(number))
-                },
+                }
                 _ => panic!("this shouldn't be here"),
             },
-            None => {
-                parse_signed_literal(s, negative, number_str)
-            }
+            None => parse_signed_literal(s, negative, number_str),
         }
     }
 }

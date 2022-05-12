@@ -1,13 +1,16 @@
 use edu_asm_parser::instruction::ArithmeticMultDivEasy;
 
-use crate::{behaviour::{Writeable, Readable}, register::RegisterSpecifier};
+use crate::{
+    behaviour::{Readable, Writeable},
+    register::RegisterSpecifier,
+};
 
 use super::{Executable, RegOrLit};
 
 pub(crate) struct MulTsE<D: Writeable, S: Readable, T: Readable> {
     d: D,
     s: S,
-    t: T
+    t: T,
 }
 
 impl<D: Writeable, S: Readable, T: Readable> Executable for MulTsE<D, S, T> {
@@ -36,7 +39,7 @@ impl<S: Writeable + Readable, T: Readable> Executable for MulIsE<S, T> {
 pub(crate) struct MulTuE<D: Writeable, S: Readable, T: Readable> {
     d: D,
     s: S,
-    t: T
+    t: T,
 }
 
 impl<D: Writeable, S: Readable, T: Readable> Executable for MulTuE<D, S, T> {
@@ -105,61 +108,37 @@ pub(super) fn transpile_arithmetic_mult_div(instr: ArithmeticMultDivEasy) -> Box
             let d = RegisterSpecifier::from(d);
             let s = RegOrLit::from(s);
             let t = RegOrLit::from(t);
-            Box::new(MulTsE {
-                d,
-                s,
-                t
-            })
-        },
+            Box::new(MulTsE { d, s, t })
+        }
         ArithmeticMultDivEasy::MulIsE { s, t } => {
             let s = RegisterSpecifier::from(s);
             let t = RegOrLit::from(t);
-            Box::new(MulIsE {
-                s,
-                t
-            })
-        },
+            Box::new(MulIsE { s, t })
+        }
         ArithmeticMultDivEasy::MulTuE { d, s, t } => {
             let d = RegisterSpecifier::from(d);
             let s = RegOrLit::from(s);
             let t = RegOrLit::from(t);
-            Box::new(MulTuE {
-                d,
-                s,
-                t
-            })
-        },
+            Box::new(MulTuE { d, s, t })
+        }
         ArithmeticMultDivEasy::MulIuE { s, t } => {
             let s = RegisterSpecifier::from(s);
             let t = RegOrLit::from(t);
-            Box::new(MulIuE {
-                s,
-                t
-            })
-        },
+            Box::new(MulIuE { s, t })
+        }
         ArithmeticMultDivEasy::DivTsE { d, r, s, t } => {
             let d = RegisterSpecifier::from(d);
             let r = RegisterSpecifier::from(r);
             let s = RegOrLit::from(s);
             let t = RegOrLit::from(t);
-            Box::new(DivTsE {
-                d,
-                r,
-                s,
-                t
-            })
-        },
+            Box::new(DivTsE { d, r, s, t })
+        }
         ArithmeticMultDivEasy::DivTuE { d, r, s, t } => {
             let d = RegisterSpecifier::from(d);
             let r = RegisterSpecifier::from(r);
             let s = RegOrLit::from(s);
             let t = RegOrLit::from(t);
-            Box::new(DivTuE {
-                d,
-                r,
-                s,
-                t
-            })
-        },
+            Box::new(DivTuE { d, r, s, t })
+        }
     }
 }

@@ -1,7 +1,12 @@
-use std::{str::FromStr, rc::Rc};
+use std::{rc::Rc, str::FromStr};
 use thiserror::Error;
 
-use crate::{register::{RegisterToken, RegisterParseError}, literal::{LiteralToken, LiteralParseError}, label_ref::{LabelRefParseError, LabelRefToken}, label::LocAwLabel};
+use crate::{
+    label::LocAwLabel,
+    label_ref::{LabelRefParseError, LabelRefToken},
+    literal::{LiteralParseError, LiteralToken},
+    register::{RegisterParseError, RegisterToken},
+};
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Instruction {
@@ -44,16 +49,10 @@ impl FromStr for RegisterOrLiteral {
     type Err = InstructionParseError;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match RegisterToken::from_str(s) {
-            Ok(d) => {
-                Ok(RegisterOrLiteral::Register(d))
-            },
-            Err(e) => {
-                match LiteralToken::from_str(s) {
-                    Ok(d) => Ok(RegisterOrLiteral::Literal(d)),
-                    Err(l) => {
-                        Err(InstructionParseError::RegisterLiteralParseError(e, l))
-                    }
-                }
+            Ok(d) => Ok(RegisterOrLiteral::Register(d)),
+            Err(e) => match LiteralToken::from_str(s) {
+                Ok(d) => Ok(RegisterOrLiteral::Literal(d)),
+                Err(l) => Err(InstructionParseError::RegisterLiteralParseError(e, l)),
             },
         }
     }
@@ -101,12 +100,8 @@ pub enum ArithmeticBase {
 
 #[inline]
 fn split_collect(inp: &str) -> Vec<&str> {
-    inp
-        .split_whitespace()
-        .collect()
+    inp.split_whitespace().collect()
 }
-
-
 
 impl FromStr for ArithmeticBase {
     type Err = InstructionParseError;
@@ -120,46 +115,46 @@ impl FromStr for ArithmeticBase {
                 let s = RegisterOrLiteral::from_str(s_str)?;
                 let t = RegisterOrLiteral::from_str(t_str)?;
                 Ok(ArithmeticBase::AddTs { d, s, t })
-            },
+            }
             ["addis", s_str, t_str] => {
                 let s = RegisterToken::from_str(s_str)?;
                 let t = RegisterOrLiteral::from_str(t_str)?;
                 Ok(ArithmeticBase::AddIs { s, t })
-            },
+            }
             ["addtu", d_str, s_str, t_str] => {
                 let d = RegisterToken::from_str(d_str)?;
                 let s = RegisterOrLiteral::from_str(s_str)?;
                 let t = RegisterOrLiteral::from_str(t_str)?;
                 Ok(ArithmeticBase::AddTu { d, s, t })
-            },
+            }
             ["addiu", s_str, t_str] => {
                 let s = RegisterToken::from_str(s_str)?;
                 let t = RegisterOrLiteral::from_str(t_str)?;
                 Ok(ArithmeticBase::AddIu { s, t })
-            },
+            }
             ["subts", d_str, s_str, t_str] => {
                 let d = RegisterToken::from_str(d_str)?;
                 let s = RegisterOrLiteral::from_str(s_str)?;
                 let t = RegisterOrLiteral::from_str(t_str)?;
                 Ok(ArithmeticBase::SubTs { d, s, t })
-            },
+            }
             ["subis", s_str, t_str] => {
                 let s = RegisterToken::from_str(s_str)?;
                 let t = RegisterOrLiteral::from_str(t_str)?;
                 Ok(ArithmeticBase::SubIs { s, t })
-            },
+            }
             ["subtu", d_str, s_str, t_str] => {
                 let d = RegisterToken::from_str(d_str)?;
                 let s = RegisterOrLiteral::from_str(s_str)?;
                 let t = RegisterOrLiteral::from_str(t_str)?;
                 Ok(ArithmeticBase::SubTu { d, s, t })
-            },
+            }
             ["subiu", s_str, t_str] => {
                 let s = RegisterToken::from_str(s_str)?;
                 let t = RegisterOrLiteral::from_str(t_str)?;
                 Ok(ArithmeticBase::SubIu { s, t })
-            },
-            _ => Err(InstructionParseError::UnknownInstruction(s.to_string()))
+            }
+            _ => Err(InstructionParseError::UnknownInstruction(s.to_string())),
         }
     }
 }
@@ -202,54 +197,54 @@ impl FromStr for ArithmeticMultDivEasy {
     type Err = InstructionParseError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-       let parts = split_collect(s);
+        let parts = split_collect(s);
 
-       match parts[..] {
-           ["mults_e", d_str, s_str, t_str] => {
-               let d = RegisterToken::from_str(d_str)?;
-               let s = RegisterOrLiteral::from_str(s_str)?;
-               let t = RegisterOrLiteral::from_str(t_str)?;
-               Ok(ArithmeticMultDivEasy::MulTsE { d, s, t })
-           },
-           ["mulis_e", s_str, t_str] => {
-               let s = RegisterToken::from_str(s_str)?;
-               let t = RegisterOrLiteral::from_str(t_str)?;
-               Ok(ArithmeticMultDivEasy::MulIsE { s, t })
-           },
-           ["multu_e", d_str, s_str, t_str] => {
-               let d = RegisterToken::from_str(d_str)?;
-               let s = RegisterOrLiteral::from_str(s_str)?;
-               let t = RegisterOrLiteral::from_str(t_str)?;
-               Ok(ArithmeticMultDivEasy::MulTuE { d, s, t })
-           },
-           ["muliu_e", s_str, t_str] => {
-               let s = RegisterToken::from_str(s_str)?;
-               let t = RegisterOrLiteral::from_str(t_str)?;
-               Ok(ArithmeticMultDivEasy::MulIuE { s, t })
-           },
-           ["divts_e", d_str, r_str, s_str, t_str] => {
-               let d = RegisterToken::from_str(d_str)?;
-               let r = RegisterToken::from_str(r_str)?;
-               let s = RegisterOrLiteral::from_str(s_str)?;
-               let t = RegisterOrLiteral::from_str(t_str)?;
-               Ok(ArithmeticMultDivEasy::DivTsE { d, r, s, t })
-           },
-           ["divtu_e", d_str, r_str, s_str, t_str] => {
-               let d = RegisterToken::from_str(d_str)?;
-               let r = RegisterToken::from_str(r_str)?;
-               let s = RegisterOrLiteral::from_str(s_str)?;
-               let t = RegisterOrLiteral::from_str(t_str)?;
-               Ok(ArithmeticMultDivEasy::DivTuE { d, r, s, t })
-           },
-           _ => Err(InstructionParseError::UnknownInstruction(s.to_string()))
-       }
+        match parts[..] {
+            ["mults_e", d_str, s_str, t_str] => {
+                let d = RegisterToken::from_str(d_str)?;
+                let s = RegisterOrLiteral::from_str(s_str)?;
+                let t = RegisterOrLiteral::from_str(t_str)?;
+                Ok(ArithmeticMultDivEasy::MulTsE { d, s, t })
+            }
+            ["mulis_e", s_str, t_str] => {
+                let s = RegisterToken::from_str(s_str)?;
+                let t = RegisterOrLiteral::from_str(t_str)?;
+                Ok(ArithmeticMultDivEasy::MulIsE { s, t })
+            }
+            ["multu_e", d_str, s_str, t_str] => {
+                let d = RegisterToken::from_str(d_str)?;
+                let s = RegisterOrLiteral::from_str(s_str)?;
+                let t = RegisterOrLiteral::from_str(t_str)?;
+                Ok(ArithmeticMultDivEasy::MulTuE { d, s, t })
+            }
+            ["muliu_e", s_str, t_str] => {
+                let s = RegisterToken::from_str(s_str)?;
+                let t = RegisterOrLiteral::from_str(t_str)?;
+                Ok(ArithmeticMultDivEasy::MulIuE { s, t })
+            }
+            ["divts_e", d_str, r_str, s_str, t_str] => {
+                let d = RegisterToken::from_str(d_str)?;
+                let r = RegisterToken::from_str(r_str)?;
+                let s = RegisterOrLiteral::from_str(s_str)?;
+                let t = RegisterOrLiteral::from_str(t_str)?;
+                Ok(ArithmeticMultDivEasy::DivTsE { d, r, s, t })
+            }
+            ["divtu_e", d_str, r_str, s_str, t_str] => {
+                let d = RegisterToken::from_str(d_str)?;
+                let r = RegisterToken::from_str(r_str)?;
+                let s = RegisterOrLiteral::from_str(s_str)?;
+                let t = RegisterOrLiteral::from_str(t_str)?;
+                Ok(ArithmeticMultDivEasy::DivTuE { d, r, s, t })
+            }
+            _ => Err(InstructionParseError::UnknownInstruction(s.to_string())),
+        }
     }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub enum ControlFlow {
     Jmp {
-        label: LabelRefToken
+        label: LabelRefToken,
     },
     JmpEq {
         l: RegisterToken,
@@ -306,7 +301,7 @@ pub enum ControlFlow {
     },
     Ret {
         s: RegisterToken,
-    }
+    },
 }
 
 impl ControlFlow {
@@ -332,41 +327,41 @@ impl ControlFlow {
         match self {
             ControlFlow::Jmp { label } => {
                 label.label = Some(loc_label);
-            },
+            }
             ControlFlow::JmpEq { label, .. } => {
                 label.label = Some(loc_label);
-            },
+            }
             ControlFlow::JmpNe { label, .. } => {
                 label.label = Some(loc_label);
-            },
+            }
             ControlFlow::JmpGtS { label, .. } => {
                 label.label = Some(loc_label);
-            }, 
+            }
             ControlFlow::JmpGeS { label, .. } => {
                 label.label = Some(loc_label);
-            },
+            }
             ControlFlow::JmpLtS { label, .. } => {
                 label.label = Some(loc_label);
-            },
+            }
             ControlFlow::JmpLeS { label, .. } => {
                 label.label = Some(loc_label);
-            },
+            }
             ControlFlow::JmpGtU { label, .. } => {
                 label.label = Some(loc_label);
-            },
+            }
             ControlFlow::JmpGeU { label, .. } => {
                 label.label = Some(loc_label);
-            },
+            }
             ControlFlow::JmpLtU { label, .. } => {
                 label.label = Some(loc_label);
-            },
+            }
             ControlFlow::JmpLeU { label, .. } => {
                 label.label = Some(loc_label);
-            },
+            }
             ControlFlow::Cal { label, .. } => {
                 label.label = Some(loc_label);
-            },
-            ControlFlow::Ret { .. } => {},
+            }
+            ControlFlow::Ret { .. } => {}
         };
     }
 }
@@ -380,80 +375,79 @@ impl FromStr for ControlFlow {
             ["jmp", label_str] => {
                 let label = LabelRefToken::from_str(label_str)?;
                 Ok(ControlFlow::Jmp { label })
-            }, 
+            }
             ["jmpeq", l_str, r_str, label_str] => {
                 let l = RegisterToken::from_str(l_str)?;
                 let r = RegisterToken::from_str(r_str)?;
                 let label = LabelRefToken::from_str(label_str)?;
                 Ok(ControlFlow::JmpEq { l, r, label })
-            }, 
+            }
             ["jmpne", l_str, r_str, label_str] => {
                 let l = RegisterToken::from_str(l_str)?;
                 let r = RegisterToken::from_str(r_str)?;
                 let label = LabelRefToken::from_str(label_str)?;
                 Ok(ControlFlow::JmpNe { l, r, label })
-            },
+            }
             ["jmpgts", l_str, r_str, label_str] => {
                 let l = RegisterToken::from_str(l_str)?;
                 let r = RegisterToken::from_str(r_str)?;
                 let label = LabelRefToken::from_str(label_str)?;
                 Ok(ControlFlow::JmpGtS { l, r, label })
-            },
+            }
             ["jmpges", l_str, r_str, label_str] => {
                 let l = RegisterToken::from_str(l_str)?;
                 let r = RegisterToken::from_str(r_str)?;
                 let label = LabelRefToken::from_str(label_str)?;
                 Ok(ControlFlow::JmpGeS { l, r, label })
-            },
+            }
             ["jmplts", l_str, r_str, label_str] => {
                 let l = RegisterToken::from_str(l_str)?;
                 let r = RegisterToken::from_str(r_str)?;
                 let label = LabelRefToken::from_str(label_str)?;
                 Ok(ControlFlow::JmpLtS { l, r, label })
-            },
+            }
             ["jmples", l_str, r_str, label_str] => {
                 let l = RegisterToken::from_str(l_str)?;
                 let r = RegisterToken::from_str(r_str)?;
                 let label = LabelRefToken::from_str(label_str)?;
                 Ok(ControlFlow::JmpLeS { l, r, label })
-            },
+            }
             ["jmpgtu", l_str, r_str, label_str] => {
                 let l = RegisterToken::from_str(l_str)?;
                 let r = RegisterToken::from_str(r_str)?;
                 let label = LabelRefToken::from_str(label_str)?;
                 Ok(ControlFlow::JmpGtU { l, r, label })
-            },
+            }
             ["jmpgeu", l_str, r_str, label_str] => {
                 let l = RegisterToken::from_str(l_str)?;
                 let r = RegisterToken::from_str(r_str)?;
                 let label = LabelRefToken::from_str(label_str)?;
                 Ok(ControlFlow::JmpGeU { l, r, label })
-            },
+            }
             ["jmpltu", l_str, r_str, label_str] => {
                 let l = RegisterToken::from_str(l_str)?;
                 let r = RegisterToken::from_str(r_str)?;
                 let label = LabelRefToken::from_str(label_str)?;
                 Ok(ControlFlow::JmpLtU { l, r, label })
-            },
+            }
             ["jmpleu", l_str, r_str, label_str] => {
                 let l = RegisterToken::from_str(l_str)?;
                 let r = RegisterToken::from_str(r_str)?;
                 let label = LabelRefToken::from_str(label_str)?;
                 Ok(ControlFlow::JmpLeU { l, r, label })
-            },
+            }
             ["cal", label_str] => {
                 let label = LabelRefToken::from_str(label_str)?;
                 Ok(ControlFlow::Cal { label })
-            },
+            }
             ["ret", s_str] => {
                 let s = RegisterToken::from_str(s_str)?;
                 Ok(ControlFlow::Ret { s })
-            },
-            _ => Err(InstructionParseError::UnknownInstruction(s.to_string()))
+            }
+            _ => Err(InstructionParseError::UnknownInstruction(s.to_string())),
         }
     }
 }
-
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Memory {
@@ -464,10 +458,10 @@ pub enum Memory {
         s: RegisterToken,
     },
     Push {
-        d: RegisterToken
+        d: RegisterToken,
     },
     Pop {
-        d: RegisterToken
+        d: RegisterToken,
     },
 }
 
@@ -481,16 +475,16 @@ impl FromStr for Memory {
                 let t = RegisterToken::from_str(t_str)?;
                 let s = RegisterToken::from_str(s_str)?;
                 Ok(Memory::Mov { t, s })
-            },
+            }
             ["push", d_str] => {
                 let d = RegisterToken::from_str(d_str)?;
                 Ok(Memory::Push { d })
-            },
+            }
             ["pop", d_str] => {
                 let d = RegisterToken::from_str(d_str)?;
                 Ok(Memory::Pop { d })
-            },
-            _ => Err(InstructionParseError::UnknownInstruction(s.to_string()))
+            }
+            _ => Err(InstructionParseError::UnknownInstruction(s.to_string())),
         }
     }
 }
@@ -498,16 +492,10 @@ impl FromStr for Memory {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Misc {
     Halt,
-    Exit {
-        s: RegisterToken
-    },
-    Print {
-        s: RegisterToken
-    },
-    Read {
-        s: RegisterToken
-    },
-    Nop
+    Exit { s: RegisterToken },
+    Print { s: RegisterToken },
+    Read { s: RegisterToken },
+    Nop,
 }
 
 // I crave for metaprogramming
@@ -522,17 +510,17 @@ impl FromStr for Misc {
             ["exit", s_str] => {
                 let s = RegisterToken::from_str(s_str)?;
                 Ok(Misc::Exit { s })
-            },
+            }
             ["print", s_str] => {
                 let s = RegisterToken::from_str(s_str)?;
                 Ok(Misc::Print { s })
-            },
+            }
             ["read", s_str] => {
                 let s = RegisterToken::from_str(s_str)?;
                 Ok(Misc::Read { s })
-            },
+            }
             ["nop"] => Ok(Misc::Nop),
-            _ => Err(InstructionParseError::UnknownInstruction(s.to_string()))
+            _ => Err(InstructionParseError::UnknownInstruction(s.to_string())),
         }
     }
 }

@@ -15,7 +15,7 @@ pub(crate) trait RegisterBehaviour {
 pub(crate) struct RegisterCollection {
     gp: GeneralPurposeRegisters,
     pub(crate) s: StackRegisters,
-    pub(crate) m: MiscRegisters
+    pub(crate) m: MiscRegisters,
 }
 
 #[derive(Default)]
@@ -27,7 +27,7 @@ pub(crate) struct GeneralPurposeRegisters {
     g4: Register,
     g5: Register,
     g6: Register,
-    g7: Register
+    g7: Register,
 }
 
 #[derive(Default)]
@@ -67,7 +67,7 @@ impl RegisterBehaviour for ZeroRegister {
 #[derive(Copy, Clone)]
 pub(crate) union Register {
     signed: i64,
-    unsigned: u64
+    unsigned: u64,
 }
 
 impl Default for Register {
@@ -79,12 +79,11 @@ impl Default for Register {
 impl Debug for Register {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let binary_str: String = format!("{:#b}", unsafe { self.unsigned });
-        f
-            .debug_struct("Register")
-                .field("binary", &binary_str)
-                .field("signed", &unsafe { self.signed })
-                .field("unsigned", &unsafe { self.unsigned })
-                .finish()
+        f.debug_struct("Register")
+            .field("binary", &binary_str)
+            .field("signed", &unsafe { self.signed })
+            .field("unsigned", &unsafe { self.unsigned })
+            .finish()
     }
 }
 
@@ -93,7 +92,7 @@ impl RegisterBehaviour for Register {
     fn get_signed(&self) -> i64 {
         unsafe { self.signed }
     }
-    
+
     #[inline]
     fn get_unsigned(&self) -> u64 {
         unsafe { self.unsigned }
@@ -147,12 +146,14 @@ impl RegisterBehaviour for InstructionRegister {
     #[cold]
     fn set_signed(&mut self, val: i64) {
         let tmp: u64 = unsafe { std::mem::transmute(val) };
-        self.counter = usize::try_from(tmp).expect("value written into the program counter exceeded the archtiectures limits");
+        self.counter = usize::try_from(tmp)
+            .expect("value written into the program counter exceeded the archtiectures limits");
     }
 
     #[cold]
     fn set_unsigned(&mut self, val: u64) {
-        self.counter = usize::try_from(val).expect("value written into the program counter exceeded the archtiectures limits")
+        self.counter = usize::try_from(val)
+            .expect("value written into the program counter exceeded the archtiectures limits")
     }
 }
 
@@ -169,7 +170,7 @@ pub(crate) enum RegisterSpecifier {
     SE,
     R,
     I,
-    Z
+    Z,
 }
 
 impl Readable for RegisterSpecifier {
@@ -186,9 +187,9 @@ impl Readable for RegisterSpecifier {
             RegisterSpecifier::G7 => state.registers.gp.g7.get_signed(),
             RegisterSpecifier::SB => state.registers.s.beg.get_signed(),
             RegisterSpecifier::SE => state.registers.s.end.get_signed(),
-            RegisterSpecifier::R  => state.registers.m.ret.get_signed(),
-            RegisterSpecifier::I  => state.registers.m.ins.get_signed(),
-            RegisterSpecifier::Z  => state.registers.m.zer.get_signed(),
+            RegisterSpecifier::R => state.registers.m.ret.get_signed(),
+            RegisterSpecifier::I => state.registers.m.ins.get_signed(),
+            RegisterSpecifier::Z => state.registers.m.zer.get_signed(),
         }
     }
 
@@ -205,9 +206,9 @@ impl Readable for RegisterSpecifier {
             RegisterSpecifier::G7 => state.registers.gp.g7.get_unsigned(),
             RegisterSpecifier::SB => state.registers.s.beg.get_unsigned(),
             RegisterSpecifier::SE => state.registers.s.end.get_unsigned(),
-            RegisterSpecifier::R  => state.registers.m.ret.get_unsigned(),
-            RegisterSpecifier::I  => state.registers.m.ins.get_unsigned(),
-            RegisterSpecifier::Z  => state.registers.m.zer.get_unsigned(),
+            RegisterSpecifier::R => state.registers.m.ret.get_unsigned(),
+            RegisterSpecifier::I => state.registers.m.ins.get_unsigned(),
+            RegisterSpecifier::Z => state.registers.m.zer.get_unsigned(),
         }
     }
 }
@@ -226,9 +227,9 @@ impl Writeable for RegisterSpecifier {
             RegisterSpecifier::G7 => state.registers.gp.g7.set_signed(val),
             RegisterSpecifier::SB => state.registers.s.beg.set_signed(val),
             RegisterSpecifier::SE => state.registers.s.end.set_signed(val),
-            RegisterSpecifier::R  => state.registers.m.ret.set_signed(val),
-            RegisterSpecifier::I  => state.registers.m.ins.set_signed(val),
-            RegisterSpecifier::Z  => state.registers.m.zer.set_signed(val),
+            RegisterSpecifier::R => state.registers.m.ret.set_signed(val),
+            RegisterSpecifier::I => state.registers.m.ins.set_signed(val),
+            RegisterSpecifier::Z => state.registers.m.zer.set_signed(val),
         }
     }
 
@@ -245,9 +246,9 @@ impl Writeable for RegisterSpecifier {
             RegisterSpecifier::G7 => state.registers.gp.g7.set_unsigned(val),
             RegisterSpecifier::SB => state.registers.s.beg.set_unsigned(val),
             RegisterSpecifier::SE => state.registers.s.end.set_unsigned(val),
-            RegisterSpecifier::R  => state.registers.m.ret.set_unsigned(val),
-            RegisterSpecifier::I  => state.registers.m.ins.set_unsigned(val),
-            RegisterSpecifier::Z  => state.registers.m.zer.set_unsigned(val),
+            RegisterSpecifier::R => state.registers.m.ret.set_unsigned(val),
+            RegisterSpecifier::I => state.registers.m.ins.set_unsigned(val),
+            RegisterSpecifier::Z => state.registers.m.zer.set_unsigned(val),
         }
     }
 }
@@ -264,11 +265,11 @@ impl From<RegisterToken> for RegisterSpecifier {
             RegisterToken::GeneralPurpose(6) => Self::G6,
             RegisterToken::GeneralPurpose(7) => Self::G7,
             RegisterToken::GeneralPurpose(_) => panic!("general purpose register index is invalid"),
-            RegisterToken::StackBase   => Self::SE,
-            RegisterToken::StackEnd    => Self::SB,
-            RegisterToken::Return      => Self::R,
+            RegisterToken::StackBase => Self::SE,
+            RegisterToken::StackEnd => Self::SB,
+            RegisterToken::Return => Self::R,
             RegisterToken::Instruction => Self::I,
-            RegisterToken::Zero        => Self::Z,
+            RegisterToken::Zero => Self::Z,
         }
     }
 }

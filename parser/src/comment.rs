@@ -8,9 +8,8 @@ lazy_static! {
 }
 
 pub fn strip_coment(inp: &str) -> &str {
-
     if let Some(comment_match) = COMMENT_RE.captures(inp) {
-        return &inp[..comment_match.get(0).unwrap().start()]
+        return &inp[..comment_match.get(0).unwrap().start()];
     }
 
     &inp[..]

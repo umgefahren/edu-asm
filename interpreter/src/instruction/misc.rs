@@ -1,13 +1,16 @@
 use edu_asm_parser::instruction::Misc;
 
-use crate::{behaviour::{Readable, Writeable}, register::RegisterSpecifier};
+use crate::{
+    behaviour::{Readable, Writeable},
+    register::RegisterSpecifier,
+};
 
 use super::Executable;
 
-pub(crate) struct Halt {} 
+pub(crate) struct Halt {}
 
 impl Executable for Halt {
-    fn execute(&self, _: &mut crate::State) { 
+    fn execute(&self, _: &mut crate::State) {
         println!("\n EXECUTION HALTED INDEFINITLY");
         loop {
             std::thread::sleep(std::time::Duration::from_secs(60));
@@ -16,7 +19,7 @@ impl Executable for Halt {
 }
 
 pub(crate) struct Exit<S: Readable> {
-    s: S
+    s: S,
 }
 
 impl<S: Readable> Executable for Exit<S> {
@@ -27,7 +30,7 @@ impl<S: Readable> Executable for Exit<S> {
 }
 
 pub(crate) struct Print<S: Readable> {
-    s: S
+    s: S,
 }
 
 impl<S: Readable> Executable for Print<S> {
@@ -40,7 +43,7 @@ impl<S: Readable> Executable for Print<S> {
 }
 
 pub(crate) struct Read<S: Writeable> {
-    s: S
+    s: S,
 }
 
 impl<S: Writeable> Executable for Read<S> {
@@ -67,15 +70,15 @@ pub(super) fn transpile_misc(instr: Misc) -> Box<dyn Executable> {
         Misc::Exit { s } => {
             let s = RegisterSpecifier::from(s);
             Box::new(Exit { s })
-        },
+        }
         Misc::Print { s } => {
             let s = RegisterSpecifier::from(s);
             Box::new(Print { s })
-        },
+        }
         Misc::Read { s } => {
             let s = RegisterSpecifier::from(s);
             Box::new(Read { s })
-        },
+        }
         Misc::Nop => Box::new(Nop {}),
     }
 }

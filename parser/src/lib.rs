@@ -1,16 +1,19 @@
 use std::{collections::HashMap, rc::Rc, str::FromStr};
 
 use comment::strip_coment;
-use instruction::{Instruction, InstructionParseError, ArithmeticBase, ArithmeticMultDivEasy, ControlFlow, Memory, Misc};
-use label::{LocAwLabel, LabelToken};
+use instruction::{
+    ArithmeticBase, ArithmeticMultDivEasy, ControlFlow, Instruction, InstructionParseError, Memory,
+    Misc,
+};
+use label::{LabelToken, LocAwLabel};
 use thiserror::Error;
 
 pub mod comment;
+pub mod instruction;
 pub mod label;
 pub mod label_ref;
 pub mod literal;
 pub mod register;
-pub mod instruction;
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub enum PureElement {
@@ -20,48 +23,45 @@ pub enum PureElement {
 
 #[derive(Debug, Error)]
 pub enum ParseError {
-    #[error("while parsing instruction `{2}` at line `{1}`, an instruction parse error occured: `{0}`")]
+    #[error(
+        "while parsing instruction `{2}` at line `{1}`, an instruction parse error occured: `{0}`"
+    )]
     InstructionParseError(InstructionParseError, usize, String),
 }
 
 fn preprocess_input(inp: &str) -> Vec<(usize, &str)> {
-    inp
-        .split('\n')
+    inp.split('\n')
         .enumerate()
-        .map(|e| {
-            (e.0, strip_coment(e.1))
-        })
-        .map(|e| {
-            (e.0, e.1.trim())
-        })
-        .filter(|e| {
-            !std::primitive::str::is_empty(e.1)
-        })
+        .map(|e| (e.0, strip_coment(e.1)))
+        .map(|e| (e.0, e.1.trim()))
+        .filter(|e| !std::primitive::str::is_empty(e.1))
         .collect()
 }
 
-fn collect_labels(lines: &[(usize, &str)]) -> (HashMap<String, Rc<LocAwLabel>>, HashMap<usize, String>) {
+fn collect_labels(
+    lines: &[(usize, &str)],
+) -> (HashMap<String, Rc<LocAwLabel>>, HashMap<usize, String>) {
     let mut ret = HashMap::new();
     let mut ret_set = HashMap::new();
-    lines
-        .iter()
-        .enumerate()
-        .for_each(|e| {
-            let index = e.0;
-            let line = e.1.1;
+    lines.iter().enumerate().for_each(|e| {
+        let index = e.0;
+        let line = e.1 .1;
 
-            if let Ok(d) = LabelToken::from_str(line) {
-                let loc_aw_label = LocAwLabel::new(d.content.clone(), index);
-                let rc_aw_label = Rc::new(loc_aw_label);
-                ret.insert(d.content.clone(), rc_aw_label);
-                ret_set.insert(index, d.content.clone());
-            }
-        });
+        if let Ok(d) = LabelToken::from_str(line) {
+            let loc_aw_label = LocAwLabel::new(d.content.clone(), index);
+            let rc_aw_label = Rc::new(loc_aw_label);
+            ret.insert(d.content.clone(), rc_aw_label);
+            ret_set.insert(index, d.content.clone());
+        }
+    });
 
     (ret, ret_set)
 }
 
-fn parse_instruction(inp: &str, labels: &HashMap<String, Rc<LocAwLabel>>) -> Result<Instruction, InstructionParseError> {
+fn parse_instruction(
+    inp: &str,
+    labels: &HashMap<String, Rc<LocAwLabel>>,
+) -> Result<Instruction, InstructionParseError> {
     let arithmetic_base_result = ArithmeticBase::from_str(inp).map(Instruction::ArithmeticBase);
     if arithmetic_base_result.is_ok() {
         return arithmetic_base_result;
@@ -70,7 +70,8 @@ fn parse_instruction(inp: &str, labels: &HashMap<String, Rc<LocAwLabel>>) -> Res
     if !arithmetic_base_error.is_unknown_instruction() {
         return Err(arithmetic_base_error);
     }
-    let arithmetic_mult_div_result = ArithmeticMultDivEasy::from_str(inp).map(Instruction::ArithmeticMultDivEasy);
+    let arithmetic_mult_div_result =
+        ArithmeticMultDivEasy::from_str(inp).map(Instruction::ArithmeticMultDivEasy);
     if arithmetic_mult_div_result.is_ok() {
         return arithmetic_mult_div_result;
     }
@@ -88,15 +89,17 @@ fn parse_instruction(inp: &str, labels: &HashMap<String, Rc<LocAwLabel>>) -> Res
         let control_flow_label = control_flow_label_opt.unwrap();
         match labels.get(&control_flow_label.content) {
             None => {
-                return Err(InstructionParseError::UnknownLabel(control_flow_label.content.clone(), inp.to_string()));
-            },
+                return Err(InstructionParseError::UnknownLabel(
+                    control_flow_label.content.clone(),
+                    inp.to_string(),
+                ));
+            }
             Some(d) => {
                 control_flow_instruction.hydrate(d.clone());
                 return Ok(Instruction::ControlFlow(control_flow_instruction));
             }
         }
     }
-
 
     let control_flow_error = control_flow_result.unwrap_err();
     if !control_flow_error.is_unknown_instruction() {
@@ -113,26 +116,32 @@ fn parse_instruction(inp: &str, labels: &HashMap<String, Rc<LocAwLabel>>) -> Res
     Misc::from_str(inp).map(Instruction::Misc)
 }
 
-pub fn parse(input: &str) -> Result<(Vec<PureElement>, HashMap<String, Rc<LocAwLabel>>), ParseError>  {
+pub fn parse(
+    input: &str,
+) -> Result<(Vec<PureElement>, HashMap<String, Rc<LocAwLabel>>), ParseError> {
     let lines = preprocess_input(input);
     let (labels, labels_locs) = collect_labels(&lines);
     let mut ret = Vec::with_capacity(lines.len());
 
     for (clean_index, (input_index, input_line)) in lines.iter().enumerate() {
         if !labels_locs.contains_key(&clean_index) {
-                match parse_instruction(input_line, &labels) {
-                    Ok(d) => {
-                        ret.push(PureElement::Instruction(d));
-                    },
-                    Err(e) => {
-                        return Err(ParseError::InstructionParseError(e, *input_index, input_line.to_string()));
-                    }
+            match parse_instruction(input_line, &labels) {
+                Ok(d) => {
+                    ret.push(PureElement::Instruction(d));
                 }
-            } else {
-                let associated_name = labels_locs.get(&clean_index).unwrap();
-                let associated_label = labels.get(associated_name).cloned().unwrap();
-                ret.push(PureElement::Label(associated_label));
+                Err(e) => {
+                    return Err(ParseError::InstructionParseError(
+                        e,
+                        *input_index,
+                        input_line.to_string(),
+                    ));
+                }
             }
+        } else {
+            let associated_name = labels_locs.get(&clean_index).unwrap();
+            let associated_label = labels.get(associated_name).cloned().unwrap();
+            ret.push(PureElement::Label(associated_label));
+        }
     }
 
     Ok((ret, labels))

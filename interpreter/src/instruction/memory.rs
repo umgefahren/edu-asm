@@ -1,6 +1,9 @@
 use edu_asm_parser::instruction::Memory;
 
-use crate::{behaviour::{Writeable, Readable}, register::RegisterSpecifier};
+use crate::{
+    behaviour::{Readable, Writeable},
+    register::RegisterSpecifier,
+};
 
 use super::Executable;
 
@@ -43,11 +46,11 @@ pub(super) fn transpile_memory(instr: Memory) -> Box<dyn Executable> {
             let t = RegisterSpecifier::from(t);
             let s = RegisterSpecifier::from(s);
             Box::new(Mov { t, s })
-        },
+        }
         Memory::Push { d } => {
             let d = RegisterSpecifier::from(d);
             Box::new(Push { d })
-        },
+        }
         Memory::Pop { d } => {
             let d = RegisterSpecifier::from(d);
             Box::new(Pop { d })

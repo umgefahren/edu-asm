@@ -1,6 +1,9 @@
 use edu_asm_parser::instruction::ControlFlow;
 
-use crate::{behaviour::Readable, register::{RegisterBehaviour, RegisterSpecifier}};
+use crate::{
+    behaviour::Readable,
+    register::{RegisterBehaviour, RegisterSpecifier},
+};
 
 use super::Executable;
 
@@ -31,7 +34,7 @@ impl<L: Readable, R: Readable> Executable for JmpEq<L, R> {
 }
 
 pub(crate) struct JmpNe<L: Readable, R: Readable> {
-    l: L, 
+    l: L,
     r: R,
     loc: usize,
 }
@@ -47,7 +50,7 @@ impl<L: Readable, R: Readable> Executable for JmpNe<L, R> {
 }
 
 pub(crate) struct JmpGtS<L: Readable, R: Readable> {
-    l: L, 
+    l: L,
     r: R,
     loc: usize,
 }
@@ -63,7 +66,7 @@ impl<L: Readable, R: Readable> Executable for JmpGtS<L, R> {
 }
 
 pub(crate) struct JmpGeS<L: Readable, R: Readable> {
-    l: L, 
+    l: L,
     r: R,
     loc: usize,
 }
@@ -79,7 +82,7 @@ impl<L: Readable, R: Readable> Executable for JmpGeS<L, R> {
 }
 
 pub(crate) struct JmpLtS<L: Readable, R: Readable> {
-    l: L, 
+    l: L,
     r: R,
     loc: usize,
 }
@@ -95,7 +98,7 @@ impl<L: Readable, R: Readable> Executable for JmpLtS<L, R> {
 }
 
 pub(crate) struct JmpLeS<L: Readable, R: Readable> {
-    l: L, 
+    l: L,
     r: R,
     loc: usize,
 }
@@ -110,9 +113,8 @@ impl<L: Readable, R: Readable> Executable for JmpLeS<L, R> {
     }
 }
 
-
 pub(crate) struct JmpGtU<L: Readable, R: Readable> {
-    l: L, 
+    l: L,
     r: R,
     loc: usize,
 }
@@ -128,7 +130,7 @@ impl<L: Readable, R: Readable> Executable for JmpGtU<L, R> {
 }
 
 pub(crate) struct JmpGeU<L: Readable, R: Readable> {
-    l: L, 
+    l: L,
     r: R,
     loc: usize,
 }
@@ -144,7 +146,7 @@ impl<L: Readable, R: Readable> Executable for JmpGeU<L, R> {
 }
 
 pub(crate) struct JmpLtU<L: Readable, R: Readable> {
-    l: L, 
+    l: L,
     r: R,
     loc: usize,
 }
@@ -160,7 +162,7 @@ impl<L: Readable, R: Readable> Executable for JmpLtU<L, R> {
 }
 
 pub(crate) struct JmpLeU<L: Readable, R: Readable> {
-    l: L, 
+    l: L,
     r: R,
     loc: usize,
 }
@@ -188,72 +190,121 @@ impl Executable for Call {
 }
 
 pub(crate) struct Ret<S: Readable> {
-    s: S
+    s: S,
 }
 
 impl<S: Readable> Executable for Ret<S> {
     fn execute(&self, state: &mut crate::State) {
-        state.registers.m.ret.set_unsigned(self.s.get_unsigned(state));
+        state
+            .registers
+            .m
+            .ret
+            .set_unsigned(self.s.get_unsigned(state));
         let target_jump_u64 = state.stack.pop().expect("stack is empty, couldn't return");
-        let target_jump = usize::try_from(target_jump_u64).expect("runtime archtiecture is to small");
+        let target_jump =
+            usize::try_from(target_jump_u64).expect("runtime archtiecture is to small");
         state.registers.m.ins.jump(target_jump);
     }
 }
 
 pub(super) fn transpile_control_flow(instr: ControlFlow) -> Box<dyn Executable> {
     match instr {
-        ControlFlow::Jmp { label } => Box::new(Jmp { loc: label.label.unwrap().loc }),
+        ControlFlow::Jmp { label } => Box::new(Jmp {
+            loc: label.label.unwrap().loc,
+        }),
         ControlFlow::JmpEq { l, r, label } => {
             let l = RegisterSpecifier::from(l);
             let r = RegisterSpecifier::from(r);
-            Box::new(JmpEq { l, r, loc: label.label.unwrap().loc })
-        },
+            Box::new(JmpEq {
+                l,
+                r,
+                loc: label.label.unwrap().loc,
+            })
+        }
         ControlFlow::JmpNe { l, r, label } => {
             let l = RegisterSpecifier::from(l);
             let r = RegisterSpecifier::from(r);
-            Box::new(JmpNe { l, r, loc: label.label.unwrap().loc })
-        },
+            Box::new(JmpNe {
+                l,
+                r,
+                loc: label.label.unwrap().loc,
+            })
+        }
         ControlFlow::JmpGtS { l, r, label } => {
             let l = RegisterSpecifier::from(l);
             let r = RegisterSpecifier::from(r);
-            Box::new(JmpGtS { l, r, loc: label.label.unwrap().loc })
-        },
+            Box::new(JmpGtS {
+                l,
+                r,
+                loc: label.label.unwrap().loc,
+            })
+        }
         ControlFlow::JmpGeS { l, r, label } => {
             let l = RegisterSpecifier::from(l);
             let r = RegisterSpecifier::from(r);
-            Box::new(JmpGeS { l, r, loc: label.label.unwrap().loc })
-        },
+            Box::new(JmpGeS {
+                l,
+                r,
+                loc: label.label.unwrap().loc,
+            })
+        }
         ControlFlow::JmpLtS { l, r, label } => {
             let l = RegisterSpecifier::from(l);
             let r = RegisterSpecifier::from(r);
-            Box::new(JmpLtS { l, r, loc: label.label.unwrap().loc })
-        },
+            Box::new(JmpLtS {
+                l,
+                r,
+                loc: label.label.unwrap().loc,
+            })
+        }
         ControlFlow::JmpLeS { l, r, label } => {
             let l = RegisterSpecifier::from(l);
             let r = RegisterSpecifier::from(r);
-            Box::new(JmpLeS { l, r, loc: label.label.unwrap().loc })
-        },
+            Box::new(JmpLeS {
+                l,
+                r,
+                loc: label.label.unwrap().loc,
+            })
+        }
         ControlFlow::JmpGtU { l, r, label } => {
             let l = RegisterSpecifier::from(l);
             let r = RegisterSpecifier::from(r);
-            Box::new(JmpGtU { l, r, loc: label.label.unwrap().loc })
-        },
+            Box::new(JmpGtU {
+                l,
+                r,
+                loc: label.label.unwrap().loc,
+            })
+        }
         ControlFlow::JmpGeU { l, r, label } => {
             let l = RegisterSpecifier::from(l);
             let r = RegisterSpecifier::from(r);
-            Box::new(JmpGeU { l, r, loc: label.label.unwrap().loc })
-        },
+            Box::new(JmpGeU {
+                l,
+                r,
+                loc: label.label.unwrap().loc,
+            })
+        }
         ControlFlow::JmpLtU { l, r, label } => {
             let l = RegisterSpecifier::from(l);
             let r = RegisterSpecifier::from(r);
-            Box::new(JmpLtU { l, r, loc: label.label.unwrap().loc })
-        },
+            Box::new(JmpLtU {
+                l,
+                r,
+                loc: label.label.unwrap().loc,
+            })
+        }
         ControlFlow::JmpLeU { l, r, label } => {
             let l = RegisterSpecifier::from(l);
             let r = RegisterSpecifier::from(r);
-            Box::new(JmpLeU { l, r, loc: label.label.unwrap().loc })
-        },
-        ControlFlow::Cal { label } => Box::new(Call { loc: label.label.unwrap().loc }),
+            Box::new(JmpLeU {
+                l,
+                r,
+                loc: label.label.unwrap().loc,
+            })
+        }
+        ControlFlow::Cal { label } => Box::new(Call {
+            loc: label.label.unwrap().loc,
+        }),
         ControlFlow::Ret { s } => {
             let s = RegisterSpecifier::from(s);
             Box::new(Ret { s })

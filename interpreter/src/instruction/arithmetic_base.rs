@@ -1,10 +1,13 @@
 use edu_asm_parser::instruction::ArithmeticBase;
 
-use crate::{behaviour::{Writeable, Readable}, register::RegisterSpecifier};
+use crate::{
+    behaviour::{Readable, Writeable},
+    register::RegisterSpecifier,
+};
 
 use super::{Executable, RegOrLit};
 
-pub(crate) struct AddTs<D: Writeable, S: Readable, T: Readable>{
+pub(crate) struct AddTs<D: Writeable, S: Readable, T: Readable> {
     d: D,
     s: S,
     t: T,
@@ -36,7 +39,7 @@ impl<S: Writeable + Readable, T: Readable> Executable for AddIs<S, T> {
 pub(crate) struct AddTu<D: Writeable, S: Readable, T: Readable> {
     d: D,
     s: S,
-    t: T
+    t: T,
 }
 
 impl<D: Writeable, S: Readable, T: Readable> Executable for AddTu<D, S, T> {
@@ -62,7 +65,7 @@ impl<S: Writeable + Readable, T: Readable> Executable for AddIu<S, T> {
     }
 }
 
-pub(crate) struct SubTs<D: Writeable, S: Readable, T: Readable>{
+pub(crate) struct SubTs<D: Writeable, S: Readable, T: Readable> {
     d: D,
     s: S,
     t: T,
@@ -94,7 +97,7 @@ impl<S: Writeable + Readable, T: Readable> Executable for SubIs<S, T> {
 pub(crate) struct SubTu<D: Writeable, S: Readable, T: Readable> {
     d: D,
     s: S,
-    t: T
+    t: T,
 }
 
 impl<D: Writeable, S: Readable, T: Readable> Executable for SubTu<D, S, T> {
@@ -123,7 +126,7 @@ impl<S: Writeable + Readable, T: Readable> Executable for SubIu<S, T> {
 #[inline]
 pub(super) fn transpile_arithmetic_base(instr: ArithmeticBase) -> Box<dyn Executable> {
     match instr {
-        ArithmeticBase::AddTs { d , s, t } => {
+        ArithmeticBase::AddTs { d, s, t } => {
             let d_spec = RegisterSpecifier::from(d);
             let s_var: RegOrLit = s.into();
             let t_var: RegOrLit = t.into();
@@ -132,34 +135,31 @@ pub(super) fn transpile_arithmetic_base(instr: ArithmeticBase) -> Box<dyn Execut
                 s: s_var,
                 t: t_var,
             })
-        },
+        }
         ArithmeticBase::AddIs { s, t } => {
             let d_spec: RegisterSpecifier = s.into();
             let t_var: RegOrLit = t.into();
             Box::new(AddIs {
                 s: d_spec,
-                t: t_var
+                t: t_var,
             })
-        },
-        ArithmeticBase::AddTu { d: d_t, s: s_t, t: t_t } => {
+        }
+        ArithmeticBase::AddTu {
+            d: d_t,
+            s: s_t,
+            t: t_t,
+        } => {
             let d: RegisterSpecifier = d_t.into();
             let s: RegOrLit = s_t.into();
             let t: RegOrLit = t_t.into();
-            Box::new(AddTu {
-                d,
-                s,
-                t
-            })
-        },
+            Box::new(AddTu { d, s, t })
+        }
         ArithmeticBase::AddIu { s: s_t, t: t_t } => {
             let s: RegisterSpecifier = s_t.into();
             let t: RegOrLit = t_t.into();
-            Box::new(AddIu {
-                s,
-                t
-            })
-        },
-        ArithmeticBase::SubTs { d , s, t } => {
+            Box::new(AddIu { s, t })
+        }
+        ArithmeticBase::SubTs { d, s, t } => {
             let d_spec = RegisterSpecifier::from(d);
             let s_var: RegOrLit = s.into();
             let t_var: RegOrLit = t.into();
@@ -168,32 +168,29 @@ pub(super) fn transpile_arithmetic_base(instr: ArithmeticBase) -> Box<dyn Execut
                 s: s_var,
                 t: t_var,
             })
-        },
+        }
         ArithmeticBase::SubIs { s, t } => {
             let d_spec: RegisterSpecifier = s.into();
             let t_var: RegOrLit = t.into();
             Box::new(SubIs {
                 s: d_spec,
-                t: t_var
+                t: t_var,
             })
-        },
-        ArithmeticBase::SubTu { d: d_t, s: s_t, t: t_t } => {
+        }
+        ArithmeticBase::SubTu {
+            d: d_t,
+            s: s_t,
+            t: t_t,
+        } => {
             let d: RegisterSpecifier = d_t.into();
             let s: RegOrLit = s_t.into();
             let t: RegOrLit = t_t.into();
-            Box::new(SubTu {
-                d,
-                s,
-                t
-            })
-        },
+            Box::new(SubTu { d, s, t })
+        }
         ArithmeticBase::SubIu { s: s_t, t: t_t } => {
             let s: RegisterSpecifier = s_t.into();
             let t: RegOrLit = t_t.into();
-            Box::new(SubIu {
-                s,
-                t
-            })
+            Box::new(SubIu { s, t })
         }
     }
 }

@@ -1,4 +1,4 @@
-use std::{str::FromStr, rc::Rc};
+use std::{rc::Rc, str::FromStr};
 
 use lazy_static::lazy_static;
 use regex::Regex;
@@ -37,11 +37,10 @@ impl FromStr for LabelRefToken {
                 let inner_content = d.get(1).unwrap().as_str().to_string();
                 Ok(Self {
                     content: inner_content,
-                    label: None
+                    label: None,
                 })
             }
             None => Err(LabelRefParseError::InvalidFormatted(s.to_string())),
         }
     }
 }
-

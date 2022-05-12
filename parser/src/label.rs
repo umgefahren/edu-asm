@@ -65,9 +65,6 @@ pub struct LocAwLabel {
 impl LocAwLabel {
     #[inline]
     pub(crate) fn new(name: String, loc: usize) -> Self {
-        Self {
-            name,
-            loc
-        }
+        Self { name, loc }
     }
 }
