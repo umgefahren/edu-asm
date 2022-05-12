@@ -63,14 +63,14 @@ impl OperationMode {
         let six_num = self.six.encode();
         let seven_num = self.seven.encode();
 
-        ret = ret | (zero_num << 7);
-        ret = ret | (one_num << 6);
-        ret = ret | (two_num << 5);
-        ret = ret | (three_num << 4);
-        ret = ret | (four_num << 3);
-        ret = ret | (five_num << 2);
-        ret = ret | (six_num << 1);
-        ret = ret | (seven_num);
+        ret |= zero_num << 7;
+        ret |= one_num << 6;
+        ret |= two_num << 5;
+        ret |= three_num << 4;
+        ret |= four_num << 3;
+        ret |= five_num << 2;
+        ret |= six_num << 1;
+        ret |= seven_num;
 
         ret
     }

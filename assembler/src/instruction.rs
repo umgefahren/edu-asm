@@ -185,9 +185,9 @@ pub fn encode_memory(instruction: Memory) -> Vec<u8> {
 pub fn encode_misc(insruction: Misc) -> Vec<u8> {
     match insruction {
         Misc::Halt => build_complete_instruction(HALT_INST, vec![]),
-        Misc::Exit { s } => build_complete_instruction(EXIT_INST, encode_instruction_parameter(&[s.into()])),
-        Misc::Print { s } => build_complete_instruction(PRINT_INST, encode_instruction_parameter(&[s.into()])),
-        Misc::Read { s } => build_complete_instruction(READ_INST, encode_instruction_parameter(&[s.into()])),
+        Misc::Exit { s } => build_complete_instruction(EXIT_INST, encode_instruction_parameter(&[s])),
+        Misc::Print { s } => build_complete_instruction(PRINT_INST, encode_instruction_parameter(&[s])),
+        Misc::Read { s } => build_complete_instruction(READ_INST, encode_instruction_parameter(&[s])),
         Misc::Dump => build_complete_instruction(DUMP_INST, vec![]),
         Misc::Nop => build_complete_instruction(NOP_INST, vec![]),
     }
