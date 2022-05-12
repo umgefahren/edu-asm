@@ -100,11 +100,15 @@ These registers define the bounds of the stack. They both store a 64-bit pointer
  * ret $s => return
 
 #### Memory
- * mov   $t $s    => Moves the contents of register $s to $t
- * load  $t $s    => Moves the contents of the memory location $s **points to** into register $t                  (word)
- * loado $t $s $o => Moves the contents of the memory location $s **points to** into register $t, offseted by $o  (word)
- * stor  $s $t    => Moves the contents of register $s into the memory location $t **points to**                  (word)
- * storo $s $t $o => Moves the contents of register $s into the memory location $t **points to**, offseted by $o  (word)
+ * mov    $t $s    => Moves the contents of register $s to $t
+ * load   $t $s    => Moves the contents of the memory location $s **points to** into register $t                  (word)
+ * loado  $t $s $o => Moves the contents of the memory location $s **points to** into register $t, offseted by $o  (word)
+ * loadb  $t $s    => Moves the contents of the memory location $s **points to** into register $t                  (byte)
+ * loadbo $t $s $o => Moves the contents of the memory location $s **points to** into register $t, offseted by $o  (byte)
+ * stor   $s $t    => Moves the contents of register $s into the memory location $t **points to**                  (word)
+ * storo  $s $t $o => Moves the contents of register $s into the memory location $t **points to**, offseted by $o  (word)
+ * storb  $s $t    => Moves the contents of register $s into the memory location $t **points to**                  (byte)
+ * storbo $s $t $o => Moves the contents of register $s into the memory location $t **points to**, offseted by $o  (byte)
 
 ##### Stack
  * push $d => push value in register $d onto stack
