@@ -307,18 +307,18 @@ pub enum ControlFlow {
 impl ControlFlow {
     pub fn get_label(&self) -> Option<&LabelRefToken> {
         match self {
-            ControlFlow::Jmp { label } => Some(&label),
-            ControlFlow::JmpEq { label, .. } => Some(&label),
-            ControlFlow::JmpNe { label, .. } => Some(&label),
-            ControlFlow::JmpGtS { label, .. } => Some(&label),
-            ControlFlow::JmpGeS { label, .. } => Some(&label),
-            ControlFlow::JmpLtS { label, .. } => Some(&label),
-            ControlFlow::JmpLeS { label, .. } => Some(&label),
-            ControlFlow::JmpGtU { label, .. } => Some(&label),
-            ControlFlow::JmpGeU { label, .. } => Some(&label),
-            ControlFlow::JmpLtU { label, .. } => Some(&label),
-            ControlFlow::JmpLeU { label, .. } => Some(&label),
-            ControlFlow::Cal { label, .. } => Some(&label),
+            ControlFlow::Jmp { label } => Some(label),
+            ControlFlow::JmpEq { label, .. } => Some(label),
+            ControlFlow::JmpNe { label, .. } => Some(label),
+            ControlFlow::JmpGtS { label, .. } => Some(label),
+            ControlFlow::JmpGeS { label, .. } => Some(label),
+            ControlFlow::JmpLtS { label, .. } => Some(label),
+            ControlFlow::JmpLeS { label, .. } => Some(label),
+            ControlFlow::JmpGtU { label, .. } => Some(label),
+            ControlFlow::JmpGeU { label, .. } => Some(label),
+            ControlFlow::JmpLtU { label, .. } => Some(label),
+            ControlFlow::JmpLeU { label, .. } => Some(label),
+            ControlFlow::Cal { label, .. } => Some(label),
             ControlFlow::Ret { .. } => None,
         }
     }

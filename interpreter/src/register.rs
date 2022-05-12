@@ -109,14 +109,9 @@ impl RegisterBehaviour for Register {
     }
 }
 
+#[derive(Default)]
 pub(crate) struct InstructionRegister {
     counter: usize,
-}
-
-impl Default for InstructionRegister {
-    fn default() -> Self {
-        Self { counter: 0 }
-    }
 }
 
 impl InstructionRegister {

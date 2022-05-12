@@ -36,10 +36,7 @@ impl FromStr for LiteralToken {
             Some(d) => d,
         };
 
-        let negative = match cap.get(1).unwrap().as_str() {
-            "-" => true,
-            _ => false,
-        };
+        let negative = matches!(cap.get(1).unwrap().as_str(), "-");
         let number_str = cap.get(2).unwrap().as_str();
         match cap.get(3) {
             Some(d) => match d.as_str() {

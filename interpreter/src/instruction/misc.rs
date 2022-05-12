@@ -52,7 +52,7 @@ impl<S: Writeable> Executable for Read<S> {
 
         let mut inp = std::io::stdin();
         let mut buf = [0u8; 1];
-        inp.read(&mut buf).unwrap();
+        inp.read_exact(&mut buf).unwrap();
         let buf_val = buf[0] as u64;
         self.s.set_unsigned(state, buf_val);
     }

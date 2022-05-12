@@ -51,7 +51,7 @@ fn collect_labels(
             let loc_aw_label = LocAwLabel::new(d.content.clone(), index);
             let rc_aw_label = Rc::new(loc_aw_label);
             ret.insert(d.content.clone(), rc_aw_label);
-            ret_set.insert(index, d.content.clone());
+            ret_set.insert(index, d.content);
         }
     });
 
@@ -80,8 +80,7 @@ fn parse_instruction(
         return Err(arithmetic_mult_div_error);
     }
     let control_flow_result = ControlFlow::from_str(inp);
-    if control_flow_result.is_ok() {
-        let mut control_flow_instruction = control_flow_result.unwrap();
+    if let Ok(mut control_flow_instruction) = control_flow_result {
         let control_flow_label_opt = control_flow_instruction.get_label();
         if control_flow_label_opt.is_none() {
             return Ok(Instruction::ControlFlow(control_flow_instruction));
@@ -159,7 +158,7 @@ mod tests {
             jmp :main
         "#;
 
-        let (stream, labels) = parse(DEMO_FILE).unwrap();
+        let (stream, _labels) = parse(DEMO_FILE).unwrap();
         println!("{:#?}", stream);
     }
 }
