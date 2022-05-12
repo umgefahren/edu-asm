@@ -6,9 +6,8 @@ pub mod register;
 
 use std::{collections::HashMap, rc::Rc};
 
-use edu_asm_parser::{label::LocAwLabel, PureElement, instruction::Instruction};
+use edu_asm_parser::{instruction::Instruction, label::LocAwLabel, PureElement};
 use instruction::encode_instruction;
-
 
 #[inline]
 pub fn update_pure_elements(
@@ -41,31 +40,29 @@ pub fn assemble(elements: Vec<PureElement>) -> Vec<u8> {
     for element in elements.iter() {
         match element {
             PureElement::Label(l) => {
-                let label = Rc::new(LocAwLabel { name: l.name.clone(), loc: byte_counter});
+                let label = Rc::new(LocAwLabel {
+                    name: l.name.clone(),
+                    loc: byte_counter,
+                });
                 label_maps.insert(l.name.clone(), label);
-            },
+            }
             PureElement::Instruction(i) => {
                 let instruction_bytes = encode_instruction(i.clone());
                 byte_counter += instruction_bytes.len();
-            },
+            }
         }
     }
     let elements = update_pure_elements(label_maps, elements);
     let mut ret = Vec::with_capacity(byte_counter);
     elements
         .iter()
-        .map(|e| {
-            match e {
-                PureElement::Instruction(i) => encode_instruction(i.clone()),
-                _ => vec![]
-            }
+        .map(|e| match e {
+            PureElement::Instruction(i) => encode_instruction(i.clone()),
+            _ => vec![],
         })
-        .for_each(|mut e| {
-            ret.append(&mut e)
-        });
+        .for_each(|mut e| ret.append(&mut e));
     ret
 }
-
 
 #[cfg(test)]
 mod tests {
