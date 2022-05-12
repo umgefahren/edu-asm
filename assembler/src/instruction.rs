@@ -290,7 +290,7 @@ pub fn encode_misc(insruction: Misc) -> Vec<u8> {
             build_complete_instruction(PRINT_INST, encode_instruction_parameter(&[s]))
         }
         Misc::Read { s } => {
-            build_complete_instruction(READ_INST, encode_instruction_parameter(&[s]))
+            build_complete_instruction(READ_INST, encode_instruction_parameter(&[s.into()]))
         }
         Misc::Dump => build_complete_instruction(DUMP_INST, vec![]),
         Misc::Nop => build_complete_instruction(NOP_INST, vec![]),

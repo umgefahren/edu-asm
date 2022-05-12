@@ -758,7 +758,7 @@ pub enum Misc {
     Halt,
     Exit { s: RegisterOrLiteral },
     Print { s: RegisterOrLiteral },
-    Read { s: RegisterOrLiteral },
+    Read { s: RegisterToken },
     Dump,
     Nop,
 }
@@ -781,7 +781,7 @@ impl FromStr for Misc {
                 Ok(Misc::Print { s })
             }
             ["read", s_str] => {
-                let s = RegisterOrLiteral::from_str(s_str)?;
+                let s = RegisterToken::from_str(s_str)?;
                 Ok(Misc::Read { s })
             }
             ["dump"] => Ok(Misc::Dump),

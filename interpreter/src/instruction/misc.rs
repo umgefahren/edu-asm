@@ -5,7 +5,7 @@ use crate::{
     register::RegisterSpecifier,
 };
 
-use super::Executable;
+use super::{Executable, RegOrLit};
 
 pub(crate) struct Halt {}
 
@@ -68,11 +68,11 @@ pub(super) fn transpile_misc(instr: Misc) -> Box<dyn Executable> {
     match instr {
         Misc::Halt => Box::new(Halt {}),
         Misc::Exit { s } => {
-            let s = RegisterSpecifier::from(s);
+            let s = RegOrLit::from(s);
             Box::new(Exit { s })
         }
         Misc::Print { s } => {
-            let s = RegisterSpecifier::from(s);
+            let s = RegOrLit::from(s);
             Box::new(Print { s })
         }
         Misc::Read { s } => {
