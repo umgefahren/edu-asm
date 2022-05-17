@@ -1,26 +1,26 @@
 use edu_asm_parser::register::RegisterToken;
 
 /// `$G_0` register code (0b000 in binary) (0 in decimal)
-pub const G_0_CODE: u8 = 0b0;
+pub const G_0_CODE: u8 = 0b00000;
 /// `$G_1` register code (0b001 in binary) (1 in decimal)
-pub const G_1_CODE: u8 = 0b1;
+pub const G_1_CODE: u8 = 0b00001;
 /// `$G_2` register code (0b010 in binary) (2 in decimal)
-pub const G_2_CODE: u8 = 0b10;
+pub const G_2_CODE: u8 = 0b00010;
 /// `$G_3` register code (0b011 in binary) (3 in decimal)
-pub const G_3_CODE: u8 = 0b11;
+pub const G_3_CODE: u8 = 0b00011;
 /// `$G_4` register code (0b100 in binary) (4 in decimal)
-pub const G_4_CODE: u8 = 0b100;
+pub const G_4_CODE: u8 = 0b00100;
 /// `$G_5` register code (0b101 in binary) (5 in decimal)
-pub const G_5_CODE: u8 = 0b101;
+pub const G_5_CODE: u8 = 0b00101;
 /// `$G_6` register code (0b110 in binary) (6 in decimal)
-pub const G_6_CODE: u8 = 0b110;
+pub const G_6_CODE: u8 = 0b00110;
 /// `$G_7` register code (0b111 in binary) (7 in decimal)
-pub const G_7_CODE: u8 = 0b111;
+pub const G_7_CODE: u8 = 0b00111;
 
 /// $S_B register code (0b1000 in binary) (8 in decimal)
-pub const S_B_CODE: u8 = 0b1000;
+pub const S_B_CODE: u8 = 0b01000;
 /// $S_E register code (0b1001 in binary) (9 in decimal)
-pub const S_E_CODE: u8 = 0b1001;
+pub const S_E_CODE: u8 = 0b01001;
 
 /// $R register code (0b10000 in binary) (16 in decimal)
 pub const R_CODE: u8 = 0b10000;
@@ -48,5 +48,25 @@ pub fn encode_register_token(token: &RegisterToken) -> u8 {
         RegisterToken::Instruction => I_CODE,
         RegisterToken::Zero => Z_CODE,
         RegisterToken::Error => E_CODE,
+    }
+}
+
+pub fn decode_register_token(bin: u8) -> RegisterToken {
+    match bin {
+        G_0_CODE => RegisterToken::GeneralPurpose(0),
+        G_1_CODE => RegisterToken::GeneralPurpose(1),
+        G_2_CODE => RegisterToken::GeneralPurpose(2),
+        G_3_CODE => RegisterToken::GeneralPurpose(3),
+        G_4_CODE => RegisterToken::GeneralPurpose(4),
+        G_5_CODE => RegisterToken::GeneralPurpose(5),
+        G_6_CODE => RegisterToken::GeneralPurpose(6),
+        G_7_CODE => RegisterToken::GeneralPurpose(7),
+        S_B_CODE => RegisterToken::StackBase,
+        S_E_CODE => RegisterToken::StackEnd,
+        R_CODE => RegisterToken::Return,
+        I_CODE => RegisterToken::Instruction,
+        Z_CODE => RegisterToken::Zero,
+        E_CODE => RegisterToken::Error,
+        _ => panic!("invalid register"),
     }
 }

@@ -35,6 +35,14 @@ impl RegisterLiteral {
             RegisterOrLiteral::Literal(_) => Self::Literal,
         }
     }
+
+    pub fn is_register(&self) -> bool {
+        matches!(self, RegisterLiteral::Register)
+    }
+
+    pub fn is_literal(&self) -> bool {
+        matches!(self, RegisterLiteral::Literal)
+    }
 }
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
@@ -145,6 +153,20 @@ impl OperationMode {
         }
 
         ret
+    }
+
+    pub fn get(&self, idx: usize) -> RegisterLiteral {
+        match idx {
+            0 => self.zero,
+            1 => self.one,
+            2 => self.two,
+            3 => self.three,
+            4 => self.four,
+            5 => self.five,
+            6 => self.six,
+            7 => self.seven,
+            _ => panic!("Invalid index"),
+        }
     }
 }
 

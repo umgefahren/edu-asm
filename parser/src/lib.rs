@@ -13,6 +13,7 @@ pub mod instruction;
 pub mod label;
 pub mod label_ref;
 pub mod literal;
+pub mod error;
 pub mod register;
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]

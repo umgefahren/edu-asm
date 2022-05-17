@@ -4,6 +4,8 @@ use lazy_static::lazy_static;
 use regex::Regex;
 use thiserror::Error;
 
+use crate::error::Errors;
+
 const LITERAL_EXP: &str = "(-?)([0-9]+)(u|s)?";
 
 lazy_static! {
@@ -31,6 +33,10 @@ pub enum LiteralParseError {
 impl FromStr for LiteralToken {
     type Err = LiteralParseError;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
+        if let Ok(error) = Errors::from_str(s) {
+            let error_num = error as u64;
+            return Ok(LiteralToken::Unsigned(error_num));
+        }
         let cap = match LITERAL_RE.captures(s) {
             None => return Err(LiteralParseError::InvalidFormatted(s.to_string())),
             Some(d) => d,

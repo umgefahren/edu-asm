@@ -123,6 +123,10 @@ These registers define the bounds of the stack. They both store a 64-bit pointer
  * dump     => dumps the whole application state into the stdout
  * nop      => do nothing
 
+#### Syscalls
+
+There are syscalls. Expecially to allocate and deallocate new memory pages.
+
 #### Comment
 
 `# `

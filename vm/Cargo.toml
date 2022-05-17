@@ -1,0 +1,27 @@
+[package]
+name = "edu-asm-vm"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+edu-asm-parser = { path = "../parser" }
+edu-asm-assembler = { path = "../assembler" }
+rand = "0.8"
+serde = { version = "1", optional = true, features = ["derive"] }
+thiserror = "1"
+cfg-if = "1"
+lazy_static = "1.4"
+
+[target.'cfg(windows)'.dependencies]
+windows = { version = "0.36.1", features = ["Win32_System_SystemInformation", "Win32_System_Diagnostics_Debug"] }
+
+[target.'cfg(unix)'.dependencies]
+libc = "0.2"
+
+[target.'cfg(wasm)'.dependencies]
+getrandom = { version = "*", features = ["js"] }
+
+[features]
+serde = ["dep:serde"]
